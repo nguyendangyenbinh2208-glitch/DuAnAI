@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản Lý Chi Tiêu Cá Nhân</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header class="app-header">
+      <h1>Quản Lý Chi Tiêu Cá Nhân</h1>
+      <p class="subtitle">Theo dõi thu chi hằng ngày tiện lợi và nhanh chóng</p>
+    </header>
+
+    <!-- Thống kê tổng hợp -->
+    <section class="summary-grid">
+      <div class="card summary-card income">
+        <div class="card-label">Tổng thu nhập</div>
+        <div class="card-value" id="total-income">0 ₫</div>
+      </div>
+      <div class="card summary-card expense">
+        <div class="card-label">Tổng chi tiêu</div>
+        <div class="card-value" id="total-expense">0 ₫</div>
+      </div>
+      <div class="card summary-card balance">
+        <div class="card-label">Số dư hiện tại</div>
+        <div class="card-value" id="balance">0 ₫</div>
+      </div>
+    </section>
+
+    <!-- Form nhập giao dịch -->
+    <section class="card form-section">
+      <h2 class="section-title">Thêm giao dịch mới</h2>
+      <form id="tx-form">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="tx-type">Loại giao dịch</label>
+            <select id="tx-type" required>
+              <option value="expense">Khoản chi</option>
+              <option value="income">Khoản thu</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="tx-amount">Số tiền (VNĐ)</label>
+            <input type="number" id="tx-amount" min="1" step="any" placeholder="Ví dụ: 50000" required>
+          </div>
+
+          <div class="form-group">
+            <label for="tx-category">Danh mục</label>
+            <select id="tx-category" required>
+              <option value="Ăn uống">Ăn uống</option>
+              <option value="Đi lại">Đi lại</option>
+              <option value="Học tập">Học tập</option>
+              <option value="Giải trí">Giải trí</option>
+              <option value="Lương">Lương</option>
+              <option value="Khác">Khác</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="tx-date">Ngày</label>
+            <input type="date" id="tx-date" required>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="tx-note">Ghi chú</label>
+            <input type="text" id="tx-note" placeholder="Thêm mô tả chi tiết (ví dụ: Ăn trưa, Đổ xăng...)">
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Thêm giao dịch</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Bảng danh sách giao dịch -->
+    <section class="card list-section">
+      <h2 class="section-title">Danh sách giao dịch</h2>
+      <div class="table-responsive">
+        <table class="tx-table">
+          <thead>
+            <tr>
+              <th>Ngày</th>
+              <th>Loại</th>
+              <th>Danh mục</th>
+              <th>Ghi chú</th>
+              <th>Số tiền</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="tx-list">
+            <!-- Dữ liệu giao dịch sẽ hiển thị ở đây qua JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <!-- Nạp script theo thứ tự quy định trong hợp đồng: storage.js trước, app.js sau -->
+  <script src="storage.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,323 @@
+/* ===================================================
+   Bảng định kiểu ứng dụng Quản lý Chi tiêu Cá nhân
+   =================================================== */
+
+:root {
+  --primary-color: #3b82f6;
+  --primary-hover: #2563eb;
+  --success-color: #10b981;
+  --success-bg: #ecfdf5;
+  --danger-color: #ef4444;
+  --danger-bg: #fef2f2;
+  --bg-color: #f8fafc;
+  --card-bg: #ffffff;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+  --radius: 12px;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  line-height: 1.5;
+  padding: 24px 16px;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Header */
+.app-header {
+  text-align: center;
+  padding: 12px 0 6px;
+}
+
+.app-header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: -0.025em;
+}
+
+.app-header .subtitle {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+/* Thẻ cơ bản (Card) */
+.card {
+  background-color: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-color);
+}
+
+.section-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 18px;
+  color: var(--text-main);
+}
+
+/* Thẻ tổng quan (Summary Grid) */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.summary-card {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.summary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.summary-card .card-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.summary-card .card-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.summary-card.income {
+  border-left: 5px solid var(--success-color);
+}
+.summary-card.income .card-value {
+  color: var(--success-color);
+}
+
+.summary-card.expense {
+  border-left: 5px solid var(--danger-color);
+}
+.summary-card.expense .card-value {
+  color: var(--danger-color);
+}
+
+.summary-card.balance {
+  border-left: 5px solid var(--primary-color);
+}
+.summary-card.balance .card-value {
+  color: var(--primary-color);
+}
+
+/* Form Section */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: #fff;
+  color: var(--text-main);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus,
+select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.form-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Nút bấm */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+.btn-delete {
+  background-color: transparent;
+  color: var(--danger-color);
+  border: 1px solid var(--danger-color);
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-delete:hover {
+  background-color: var(--danger-color);
+  color: #fff;
+}
+
+/* Bảng danh sách */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.tx-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.925rem;
+}
+
+.tx-table th {
+  background-color: #f1f5f9;
+  color: var(--text-muted);
+  font-weight: 600;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.tx-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+}
+
+.tx-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+/* Nhãn loại thu/chi (Badges) */
+.badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  font-size: 0.775rem;
+  font-weight: 600;
+}
+
+.badge-income {
+  background-color: var(--success-bg);
+  color: var(--success-color);
+}
+
+.badge-expense {
+  background-color: var(--danger-bg);
+  color: var(--danger-color);
+}
+
+/* Cột số tiền */
+.amount-income {
+  color: var(--success-color);
+  font-weight: 600;
+}
+
+.amount-expense {
+  color: var(--danger-color);
+  font-weight: 600;
+}
+
+/* Responsive trên điện thoại / màn hình nhỏ */
+@media (max-width: 640px) {
+  body {
+    padding: 16px 8px;
+  }
+
+  .container {
+    gap: 16px;
+  }
+
+  .card {
+    padding: 16px;
+  }
+
+  .app-header h1 {
+    font-size: 1.4rem;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    justify-content: stretch;
+  }
+
+  .btn-primary {
+    width: 100%;
+  }
+
+  .tx-table th,
+  .tx-table td {
+    padding: 10px 8px;
+    font-size: 0.85rem;
+  }
+}

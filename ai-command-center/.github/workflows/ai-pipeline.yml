@@ -1,0 +1,197 @@
+name: Claude Code AI Review Pipeline
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  issues:
+    types: [labeled]
+  schedule:
+    # Mỗi 2h sáng: phân loại issues và tạo PR fix tự động
+    - cron: '0 2 * * *'
+
+env:
+  ANTHROPIC_BASE_URL: http://localhost:8080
+  CLAUDE_MODEL: claude-sonnet-4-5
+
+jobs:
+  # =========================================================
+  # JOB 1: AI Code Review cho mỗi Pull Request
+  # =========================================================
+  ai-code-review:
+    name: "🤖 Claude Code Review"
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Install antigravity-claude-proxy
+        run: npm install -g antigravity-claude-proxy
+
+      - name: Get PR diff
+        id: diff
+        run: |
+          git diff origin/${{ github.base_ref }}...HEAD > /tmp/pr.diff
+          echo "DIFF_SIZE=$(wc -l < /tmp/pr.diff)" >> $GITHUB_OUTPUT
+
+      - name: Run Claude Code Review
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          REVIEW=$(claude --print --no-markdown \
+            "Review PR diff sau và đưa ra nhận xét chi tiết bằng tiếng Việt:
+            1. Phát hiện bug tiềm ẩn
+            2. Vấn đề performance
+            3. Security vulnerabilities
+            4. Code style & best practices
+            Diff: $(cat /tmp/pr.diff | head -500)")
+
+          # Post comment lên PR
+          gh pr comment ${{ github.event.pull_request.number }} --body "## 🤖 Claude Code Review
+
+          $REVIEW
+
+          ---
+          *Được review tự động bởi Claude Code + Antigravity Proxy*"
+
+  # =========================================================
+  # JOB 2: Unit Test Generation
+  # =========================================================
+  generate-tests:
+    name: "🧪 Auto Generate Unit Tests"
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Generate missing unit tests
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          # Tìm file Python/JS mới chưa có test
+          NEW_FILES=$(git diff origin/${{ github.base_ref }}...HEAD --name-only | grep -E '\.(py|js|ts)$' | grep -v test)
+          for FILE in $NEW_FILES; do
+            echo "Generating tests for $FILE..."
+            claude --print "Viết unit test đầy đủ cho file này: $(cat $FILE)" > "tests/test_$(basename $FILE)"
+          done
+
+  # =========================================================
+  # JOB 3: Scheduled - Phân loại Issues và tạo PR fix lúc 2AM
+  # =========================================================
+  nightly-issue-triage:
+    name: "🌙 Nightly Issue Triage & Auto-Fix"
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install tools
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Fetch and triage good-first-issues
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          # Lấy danh sách issues với label 'good-first-issue'
+          ISSUES=$(gh issue list --label "good-first-issue" --json number,title,body --limit 5)
+          echo "$ISSUES" | jq -c '.[]' | while read ISSUE; do
+            NUMBER=$(echo "$ISSUE" | jq '.number')
+            TITLE=$(echo "$ISSUE" | jq -r '.title')
+            BODY=$(echo "$ISSUE" | jq -r '.body')
+
+            echo "Processing issue #$NUMBER: $TITLE"
+
+            # Tạo branch mới
+            git checkout -b "auto-fix/issue-$NUMBER"
+
+            # Nhờ Claude Code phân tích và fix
+            FIX=$(claude --print --no-markdown \
+              "Phân tích issue sau và đề xuất code fix:
+              Title: $TITLE
+              Description: $BODY
+              Codebase: $(find . -name '*.py' -o -name '*.js' | head -20 | xargs ls -la)
+              Tạo code fix cụ thể.")
+
+            echo "# Auto-fix for Issue #$NUMBER" > auto_fix_notes.md
+            echo "$FIX" >> auto_fix_notes.md
+
+            # Commit và tạo PR
+            git add .
+            git commit -m "🤖 Auto-fix: Issue #$NUMBER - $TITLE"
+            git push origin "auto-fix/issue-$NUMBER"
+
+            gh pr create \
+              --title "🤖 [Auto] Fix: $TITLE" \
+              --body "Closes #$NUMBER
+
+              ## Thay đổi
+              $FIX
+
+              ---
+              *PR được tạo tự động bởi Claude Code lúc 2AM theo lịch*" \
+              --label "auto-generated"
+
+            git checkout main
+          done
+
+  # =========================================================
+  # JOB 4: Visual Bug Detection (Chromium Sub-agent)
+  # =========================================================
+  visual-bug-detection:
+    name: "👁️ Visual Bug Detection"
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Puppeteer
+        run: npm install puppeteer
+
+      - name: Take screenshots and analyze
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          node -e "
+          const puppeteer = require('puppeteer');
+          (async () => {
+            const browser = await puppeteer.launch({args: ['--no-sandbox']});
+            const page = await browser.newPage();
+            await page.setViewport({width: 1920, height: 1080});
+            // Chụp ảnh trang chủ
+            await page.goto('http://localhost:3000');
+            await page.screenshot({path: 'screenshot-desktop.png', fullPage: true});
+            // Mobile view
+            await page.setViewport({width: 375, height: 812});
+            await page.screenshot({path: 'screenshot-mobile.png', fullPage: true});
+            await browser.close();
+          })();
+          "
+
+      - name: Upload screenshots as artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-screenshots
+          path: screenshot-*.png
