@@ -1,4 +1,3 @@
-
 # QUY TẮC LÀM VIỆC CỦA HỆ THỐNG AI
 
 ## 1. Phân chia vai trò
@@ -16,3 +15,7 @@
 
 - Khi làm xong 1 mục trong TASKS.md: đánh dấu [x] vào TASKS.md.
 - Ghi tóm tắt 2–3 dòng những gì vừa làm vào cuối file MEMORY.md.
+
+## 4. Quy tắc sao lưu an toàn (Git)
+
+- Sau khi hoàn thành mỗi Task và người dùng xác nhận đạt, nhắc người dùng chạy 2 lệnh `git add .` và `git commit -m "Hoan thanh Task X"` để lưu mốc an toàn trước khi mở phiên chat mới.
