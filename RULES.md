@@ -19,3 +19,10 @@
 ## 4. Quy tắc sao lưu an toàn (Git)
 
 - Sau khi hoàn thành mỗi Task và người dùng xác nhận đạt, nhắc người dùng chạy 2 lệnh `git add .` và `git commit -m "Hoan thanh Task X"` để lưu mốc an toàn trước khi mở phiên chat mới.
+
+## 5. Quy trình Kiểm định tự động (Tầng 3)
+
+- Sau khi hoàn thành code giao diện hoặc chức năng web, bắt buộc dùng trình duyệt tích hợp (Browser Sub-agent) mở trang web lên tự kiểm thử:
+  1. Thử nhập dữ liệu và bấm các nút chức năng như người dùng thật.
+  2. Kiểm tra Console trình duyệt xem có dòng lỗi màu đỏ nào không.
+  3. Nếu phát hiện lỗi, tự sửa ngay (tối đa 2 lần theo quy tắc ngắt mạch) trước khi báo hoàn thành cho người dùng.
